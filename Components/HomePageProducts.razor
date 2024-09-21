@@ -1,0 +1,27 @@
+﻿<MudContainer Class="mt-16">
+    <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Enjoy Our Gourmet Snacks!</MudText>
+    <MudText Align="Align.Center">
+        Some long pricing text should go here maybe? who knows what text you would want here, i guess i cant fill it in for you.
+    </MudText>
+
+    <MudGrid Class="mt-8">
+        @if (Products == null || !Products.Any()) {
+            <MudText Align="Align.Center">Loading products...</MudText>
+        } else {
+            @foreach (var product in Products) {
+                <MudItem xs="12" sm="6" md="4">
+                    <ProductCard Product="@product" />
+                </MudItem>
+            }
+        }
+    </MudGrid>
+</MudContainer>
+
+@code {
+    public List<Product> Products { get; set; }
+    public HttpClient httpClient = new(); 
+
+        protected override async Task OnInitializedAsync() {
+            Products = await httpClient.GetFromJsonAsync<List<Product>>("http://localhost:4242/api/products") ?? [];
+        }
+}
