@@ -8,14 +8,16 @@
 <MudSnackbarProvider />
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudText Typo="Typo.h5" Class="ml-3">Just Off Melrose</MudText>
+        <MudLink Typo="Typo.h5" Class="ml-3" Href="/" Color="Color.Info" Underline="Underline.None" >Just Off Melrose</MudLink>
         <MudSpacer />
         <MudToggleIconButton @bind-Toggled="_isDarkMode"
                              Icon="@Icons.Material.Filled.WbSunny"
                              Color="@Color.Warning"
                              ToggledIcon="@Icons.Material.Filled.NightsStay"
                              ToggledColor="@Color.Default" />
-        <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" Color="@Color.Secondary" OnClick="NavigateToCart" />
+        <MudBadge Content="@cartCount" Color="Color.Error" Visible="@HasItemsInCart" Overlap="true">
+            <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" Color="@Color.Secondary" OnClick="NavigateToCart" />
+        </MudBadge>
     </MudAppBar>
     <MudMainContent>
         @Body
@@ -25,11 +27,30 @@
 @code {
     private MudTheme _theme = new();
     private bool _isDarkMode;
+    private int cartCount;
+    private bool HasItemsInCart => cartCount > 0;
 
     [Inject]
     private NavigationManager Navigation { get; set; }
 
+    [Inject]
+    private CartService CartService { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+        cartCount = (await CartService.GetCartItemsAsync()).Sum(item => item.Quantity);
+        CartService.OnChange += UpdateCartCount;
+    }
+
+    private async void UpdateCartCount() {
+        cartCount = (await CartService.GetCartItemsAsync()).Sum(item => item.Quantity);
+        StateHasChanged();
+    }
+
     private void NavigateToCart() {
         Navigation.NavigateTo("/cart");
+    }
+
+    public void Dispose() {
+        CartService.OnChange -= UpdateCartCount;
     }
 }

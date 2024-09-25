@@ -1,4 +1,6 @@
-﻿<MudCard Elevation="25" Class="rounded-lg pb-4">
+﻿@inject CartService CartService
+
+<MudCard Elevation="25" Class="rounded-lg pb-4">
     <MudCardMedia Image="@Product.image" Height="200" />
     <MudCardHeader>
         <CardHeaderContent>
@@ -11,11 +13,18 @@
         </div>
     </MudCardContent>
     <MudCardActions Class="d-flex justify-center">
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Style="width:50%;">Add to Cart!</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
+                   Style="width:50%;" OnClick="AddToCart">
+            Add to Cart!
+        </MudButton>
     </MudCardActions>
 </MudCard>
 
 @code {
     [Parameter]
     public Product Product { get; set; }
+
+    private async Task AddToCart() {
+        await CartService.AddToCartAsync(Product);
+    }
 }

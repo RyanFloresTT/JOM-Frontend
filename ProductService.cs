@@ -30,4 +30,5 @@ public class Product {
     public string image { get; set; }
     public string priceID { get; set; }
     public float price { get; set; }
+    public int Quantity { get; set; } = 1;
 }
